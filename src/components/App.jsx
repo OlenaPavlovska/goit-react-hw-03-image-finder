@@ -29,15 +29,12 @@ import { Modal } from './modal/modal'
  handleChange = ({ target: { value, name } }) => {
       this.setState({ [name]: value.trim() })
     }
-
- handleSubmit = (e) => {
-      e.preventDefault()
-      const { query } = this.state;
-      this.props.onSubmit(query)
-      this.setState({ query: '' })
-      if (!query.trim()) return Notiflix.Notify.failure(`Fill the search field`)
-
-    }
+handleSubmit = e => {
+    const { query } = this.state;
+    this.setState({ query: e });
+    if (!query.trim()) return Notiflix.Notify.failure(`Fill the search field`);
+  };
+ 
     resetSearch = () => this.setState({ images: [], page: 1, maxPage: 0, isLoading: true })
 
     loadBtn = () => {
@@ -49,25 +46,42 @@ import { Modal } from './modal/modal'
 
     onError = err => Notiflix.Notify.failure(err.message)
 
-  async componentDidUpdate(prevProps, prevState) {
-   
-    const { query, page, maxPage, isLoading, images, isShowModal, refModal, refElem } = this.state
-  
-    if (isShowModal) refModal.current.focus()
+  componentDidUpdate(prevProps, prevState) {
+    const {
+      query,
+      page,
+      maxPage,
+      isLoading,
+      images,
+      isShowModal,
+      refModal,
+      refElem,
+    } = this.state;
+    if (prevState.query !== query || prevState.page !== page) {
+      const getPhotos = async () => {
+        try {
+          const data = await getImages(query, page);
+          if (!data.hits.length)
+            throw new Error(
+              'Sorry, there are no images matching your search query. Please try again.'
+            );
+          const imagesPage = this.findGalleryImage(data.hits);
+          this.setState({ images: [...images, ...imagesPage] });
+          if (maxPage === 0)
+            this.setState({ maxPage: Math.ceil(data.totalHits / 12) });
+        } catch (error) {
+          this.onError(error);
+        } finally {
+          this.setState({ isLoading: false });
+        }
+      };
+      getPhotos();
+    }
+    if (isShowModal) refModal.current.focus();
     if (isLoading) {
-      try {
-        const data = await getImages(query, page);
-        if (!data.hits.length) throw new Error("Sorry, there are no images matching your search query. Please try again.");
-        const imagesPage = this.findGalleryImage(data.hits)
-        this.setState({ images: [...images, ...imagesPage] })
-        if (maxPage === 0) this.setState({ maxPage: Math.ceil(data.totalHits / 12) })
-      } catch (error) {
-        this.onError(error)
-      } finally {
-        this.setState({ isLoading: false });
-      }
-      const prevImages = prevState.images
-      if (images.length > 0 && prevImages.length !== images.length) refElem.current.scrollIntoView({ behavior: 'smooth' })
+      const prevImages = prevState.images;
+      if (images.length > 0 && prevImages.length !== images.length)
+        refElem.current.scrollIntoView({ behavior: 'smooth' });
     }
   }
     
@@ -78,7 +92,7 @@ import { Modal } from './modal/modal'
     
 
 
-    clickOnImage = ({ target: { dataset: { large }, alt } }) => {
+    clickOnImage = ({ target: { dataset: { large } } }) => {
   
       const imageFunction = { largeImageURL: large }
       this.setState({ showImage: imageFunction, isShowModal: true })
