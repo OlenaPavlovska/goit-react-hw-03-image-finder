@@ -1,13 +1,13 @@
 import propTypes from 'prop-types'
-// import css from './modal.module.css'
+import css from './modal.module.css'
 
 
-export const Modal = ({ onKeyDown, onClick, refModal, imageFunction }) => {
-    const {largeImageURL}= imageFunction
+export const Modal = ({imageFunction, onKeyDown, onClick, refModal })=>{
+    const {largeImageURL, tags}= imageFunction
     return (
-        <div ref={refModal} onClick={onClick} onKeyDown={onKeyDown} class="overlay">
-  <div class="modal">
-    <img src={largeImageURL} alt="" />
+      <div tabIndex={'-1'} ref={refModal} onClick={onClick} onKeyDown={onKeyDown} className={css.overlay}>
+        <div className={css.modal}>
+    <img src={largeImageURL} alt={tags} />
   </div>
 </div>
     )

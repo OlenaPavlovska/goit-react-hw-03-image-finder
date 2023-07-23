@@ -24,22 +24,24 @@ import { Modal } from './modal/modal'
     showImage: { largeImageURL: "" },
     isShowModal: false,
     refModal: React.createRef(),
+     
    }
-   
+  
  handleChange = ({ target: { value, name } }) => {
       this.setState({ [name]: value.trim() })
     }
 handleSubmit = e => {
     const { query } = this.state;
     this.setState({ query: e });
-    if (!query.trim()) return Notiflix.Notify.failure(`Fill the search field`);
+  if (!query.trim()) return Notiflix.Notify.failure(`Fill the search field`);
+  this.resetSearch()
   };
  
     resetSearch = () => this.setState({ images: [], page: 1, maxPage: 0, isLoading: true })
 
     loadBtn = () => {
-      this.setState(prevPage => {
-        return { page: prevPage + 1, loading: true }
+      this.setState(prev => {
+        return { page: prev.page + 1, loading: true }
       }
       )
     }
@@ -56,6 +58,7 @@ handleSubmit = e => {
       isShowModal,
       refModal,
       refElem,
+      
     } = this.state;
     if (prevState.query !== query || prevState.page !== page) {
       const getPhotos = async () => {
@@ -86,15 +89,15 @@ handleSubmit = e => {
   }
     
 
-    findGalleryImage = data => data.map(({ webformatURL, largeImageURL }) => {
-      return { id: nanoid(), webformatURL, largeImageURL }
+    findGalleryImage = data => data.map(({ webformatURL,tags, largeImageURL }) => {
+      return { id: nanoid(), webformatURL,tags, largeImageURL }
     })
     
 
 
-    clickOnImage = ({ target: { dataset: { large } } }) => {
-  
-      const imageFunction = { largeImageURL: large }
+    clickOnImage = ({ target: { dataset: { large },alt } }) => {
+  if(!large) return
+      const imageFunction = { largeImageURL: large,tags:alt }
       this.setState({ showImage: imageFunction, isShowModal: true })
     }
     closeModal = () => this.setState({ isShowModal: false })
@@ -102,8 +105,8 @@ handleSubmit = e => {
     modalClick = (e) => {
       if (!e.target.src) this.closeModal()
     }
-    escCloseModal = (e) => {
-      if (e.key === 'escape') this.closeModal()
+    escCloseModal = e => {
+      if (e.key === 'Escape') this.closeModal()
     }
  
 
@@ -123,7 +126,8 @@ handleSubmit = e => {
         
        </div>
      )
-   } 
+   }
+   
 }
 
 

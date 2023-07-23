@@ -9,7 +9,7 @@ export const Loader = ({render }) => {
             height="80"
   width="80"
   radius="9"
-  color="green"
+  color="black"
   ariaLabel="loading"
   wrapperStyle
   wrapperClass

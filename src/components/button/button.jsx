@@ -1,11 +1,11 @@
 import propTypes from 'prop-types'
-// import css from './button.module.css'
+import css from './button.module.css'
 
 
 
 export const Loaderbtn = ({ onClick }) => {
     return (
-        <button type="button" onClick={onClick}>Load more</button>
+        <button className={css.button} type="button" onClick={onClick}>Load more</button>
     )
 }
 Loaderbtn.propTypes = {

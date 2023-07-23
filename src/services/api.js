@@ -7,6 +7,7 @@ async function getImages(query, page) {
   &orientation=horizontal&safesearch=true`;
 
   const res = await axios.get(url);
+
   return res.data;
 }
 
